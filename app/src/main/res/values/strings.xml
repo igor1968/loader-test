@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">loader-test</string>
+    <string name="app_name_subtitle">loader_test</string>
+    <string name="menu_catalogue">Directory</string>
+    <string name="menu_contacts">Contacts</string>
+    <string name="menu_about">About</string>
+    <string name="drawer_open">Open naviagtion drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+</resources>
