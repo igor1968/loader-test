@@ -1,33 +1,36 @@
 package com.igordanilchik.android.loader_test.model;
 
+import org.parceler.Parcel;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
+@Parcel
 @Root(name = "offer", strict = false)
-public class Offer implements Serializable {
+public class Offer {
 
     @Attribute(name = "id")
-    private int id;
+    int id;
     @Element(name = "url")
-    private String url;
+    String url;
     @Element(name = "categoryId")
-    private int categoryId;
+    int categoryId;
     @Element(name = "name")
-    private String name;
+    String name;
     @Element(name = "picture", required = false)
-    private String pictureUrl;
+    String pictureUrl;
     @Element(name = "price")
-    private String price;
+    String price;
     @Element(name = "description", required = false)
-    private String description;
+    String description;
     @ElementMap(entry = "param", key = "name", attribute = true, inline = true, required = false)
-    private HashMap<String, String> param;
+    HashMap<String, String> param;
 
+    public Offer() {
+    }
 
     public int getId() {
         return id;

@@ -26,6 +26,8 @@ import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.ContactsFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.OffersFragment;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 }
             }
             if (savedInstanceState.get(ARG_DATA) != null) {
-                dataset = (Shop) savedInstanceState.getSerializable(ARG_DATA);
+                dataset = Parcels.unwrap(savedInstanceState.getParcelable(ARG_DATA));
             } else {
                 getSupportLoaderManager().initLoader(0, null, this);
             }
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             bundle.putString(ARG_CURRENT_FRAGMENT_TAG, currentFragment.getTag());
         }
         if (dataset != null) {
-            bundle.putSerializable(ARG_DATA, dataset);
+            bundle.putParcelable(ARG_DATA, Parcels.wrap(dataset));
         }
     }
 

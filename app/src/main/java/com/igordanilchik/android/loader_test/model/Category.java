@@ -1,18 +1,21 @@
 package com.igordanilchik.android.loader_test.model;
 
+import org.parceler.Parcel;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
-import java.io.Serializable;
-
+@Parcel
 @Root(name = "categories")
-public class Category implements Serializable {
+public class Category {
 
     @Attribute(name = "id")
-    private int id;
+    int id;
     @Text
-    private String title;
+    String title;
+
+    public Category() {
+    }
 
     public int getId() {
         return id;

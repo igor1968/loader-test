@@ -1,19 +1,23 @@
 package com.igordanilchik.android.loader_test.model;
 
+import org.parceler.Parcel;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
-import java.io.Serializable;
 import java.util.List;
 
+@Parcel
 @Root(name = "shop", strict = false)
-public class Shop implements Serializable {
+public class Shop {
 
     @ElementList(name = "categories")
-    private List<Category> categories;
+    List<Category> categories;
 
     @ElementList(name = "offers")
-    private List<Offer> offers;
+    List<Offer> offers;
+
+    public Shop() {
+    }
 
     public List<Offer> getOffers() {
         return offers;
