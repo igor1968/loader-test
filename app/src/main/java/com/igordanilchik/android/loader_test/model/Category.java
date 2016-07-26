@@ -1,14 +1,18 @@
 package com.igordanilchik.android.loader_test.model;
 
-public class Category {
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
+import org.simpleframework.xml.Text;
 
+import java.io.Serializable;
+
+@Root(name = "categories")
+public class Category implements Serializable {
+
+    @Attribute(name = "id")
     private int id;
+    @Text
     private String title;
-
-    public Category(int id, String title) {
-        this.id = id;
-        this.title = title;
-    }
 
     public int getId() {
         return id;
