@@ -1,37 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="16dp"
-              android:background="?android:attr/selectableItemBackground">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingTop="@dimen/material_component_lists_padding_above_list"
+    android:padding="@dimen/material_component_lists_two_line_text_size">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/category_card_view"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/category_image"
+        android:layout_width="@dimen/material_component_text_fields_icon_height"
+        android:layout_height="@dimen/material_component_text_fields_icon_height"
+        android:paddingLeft="@dimen/material_component_lists_icon_left_padding"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
+
+    <TextView
+        android:id="@+id/category_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        >
+        android:layout_alignParentTop="true"
+        android:textColor="@color/color_list_primary_text"
+        android:textSize="@dimen/material_component_lists_single_line_text_size"
+        android:paddingLeft="@dimen/material_component_lists_text_left_padding"
+        android:paddingRight="@dimen/material_component_lists_right_padding"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+</RelativeLayout>
 
-            <ImageView
-                android:id="@+id/category_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="16dp"
-                />
-
-            <TextView
-                android:id="@+id/category_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/category_image"
-                />
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
-</LinearLayout>

@@ -16,6 +16,4 @@ public class Catalogue {
     public void setShop(Shop shop) {
         this.shop = shop;
     }
-
-
 }

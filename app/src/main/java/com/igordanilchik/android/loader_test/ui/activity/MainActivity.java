@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     DrawerLayout drawerLayout;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.menu_drawer)
+    @BindView(R.id.nav_view)
     NavigationView drawer;
     ActionBarDrawerToggle drawerToggle;
     @Nullable
@@ -153,11 +153,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (dataset.getCategories() != null) {
                 CategoriesFragment fragment = (CategoriesFragment) getSupportFragmentManager().findFragmentByTag(CategoriesFragment.class.getName());
                 if (fragment != null) {
-                    fragment.updateContent(dataset.getCategories());
+                    fragment.updateContent(getContent());
                 }
-            }
-            if (dataset.getOffers() != null) {
-//                offers = dataset.getOffers();
             }
         }
     }
@@ -221,7 +218,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Nullable
     public List<Category> getContent() {
         if (dataset != null) {
-            return dataset.getCategories();
+            List<Category> categories = dataset.getCategories();
+            if (dataset.getOffers() != null) {
+                List<Offer> offers = dataset.getOffers();
+                for (Category category : categories) {
+                    int id = category.getId();
+                    for (Offer offer : offers) {
+                        if (offer.getCategoryId() == category.getId() && offer.getPictureUrl() != null) {
+                            category.setPictureUrl(offer.getPictureUrl());
+                            break;
+                        }
+                    }
+                }
+            }
+            return categories;
         }
         return null;
     }

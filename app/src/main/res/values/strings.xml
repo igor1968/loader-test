@@ -6,4 +6,6 @@
     <string name="menu_about">About</string>
     <string name="drawer_open">Open naviagtion drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="offer_price">Price: %s</string>
+    <string name="offer_weight">Weight: %s</string>
 </resources>

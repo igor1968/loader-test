@@ -6,4 +6,6 @@
     <string name="menu_about">О приложении</string>
     <string name="drawer_open">Открыть навигационную панель</string>
     <string name="drawer_close">Закрыть навигационную панель</string>
+    <string name="offer_price">Цена: %s</string>
+    <string name="offer_weight">Вес: %s</string>
 </resources>

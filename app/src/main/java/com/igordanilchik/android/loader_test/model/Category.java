@@ -6,13 +6,15 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
 @Parcel
-@Root(name = "categories")
+@Root(name = "categories", strict = false)
 public class Category {
 
     @Attribute(name = "id")
     int id;
     @Text
     String title;
+
+    String pictureUrl;
 
     public Category() {
     }
@@ -32,4 +34,13 @@ public class Category {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
 }

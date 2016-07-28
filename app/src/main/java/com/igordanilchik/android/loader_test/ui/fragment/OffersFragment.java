@@ -15,6 +15,9 @@ import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.model.Offer;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
+import com.igordanilchik.android.loader_test.utils.FragmentUtils;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +35,6 @@ public class OffersFragment extends Fragment {
     OffersAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     private Unbinder unbinder;
-    private int categoryId;
     @NonNull
     private List<Offer> offers = new ArrayList<>();
 
@@ -70,7 +72,7 @@ public class OffersFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Bundle bundle = getArguments();
-        categoryId = bundle.getInt(MainActivity.ARG_DATA);
+        int categoryId = bundle.getInt(MainActivity.ARG_DATA);
 
         if (listener != null) {
             offers = listener.getContent(categoryId);
@@ -80,14 +82,25 @@ public class OffersFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new OffersAdapter(offers);
+        adapter = new OffersAdapter(this.getContext(), offers);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(new OffersAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                //categoryClicked(position);
+                offerClicked(position);
             }
         });
+    }
+
+    private void offerClicked(int position) {
+        Offer offer = offers.get(position);
+
+        Bundle args = new Bundle();
+        args.putParcelable(MainActivity.ARG_DATA, Parcels.wrap(offer));
+
+        OfferFragment fragment = OfferFragment.newInstance();
+        fragment.setArguments(args);
+        FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
     }
 
     @Override
