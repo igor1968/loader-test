@@ -8,4 +8,5 @@
     <string name="drawer_close">Закрыть навигационную панель</string>
     <string name="offer_price">Цена: %s</string>
     <string name="offer_weight">Вес: %s</string>
+    <string name="title_for_empty_state">Нет сети</string>
 </resources>

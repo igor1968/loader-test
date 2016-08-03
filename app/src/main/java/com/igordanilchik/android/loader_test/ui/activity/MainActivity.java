@@ -14,6 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
@@ -49,6 +52,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView drawer;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @BindView(R.id.empty_state_container)
+    LinearLayout emptyStateContainer;
+
     ActionBarDrawerToggle drawerToggle;
     @Nullable
     Fragment currentFragment = null;
@@ -81,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         drawerLayout.addDrawerListener(drawerToggle);
 
         if (savedInstanceState == null) {
-            getSupportLoaderManager().initLoader(0, null, this);
+            refreshData();
 
             MenuItem item = drawer.getMenu().findItem(R.id.nav_catalogue_fragment);
             selectDrawerItem(item);
@@ -95,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (savedInstanceState.get(ARG_DATA) != null) {
                 dataset = Parcels.unwrap(savedInstanceState.getParcelable(ARG_DATA));
             } else {
-                getSupportLoaderManager().initLoader(0, null, this);
+                refreshData();
             }
         }
     }
@@ -148,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Catalogue> loader, Catalogue data) {
+        progressBar.setVisibility(View.GONE);
         if (data != null && data.getShop() != null) {
             dataset = data.getShop();
             if (dataset.getCategories() != null) {
@@ -156,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     fragment.updateContent(getContent());
                 }
             }
+        } else {
+            emptyStateContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -249,5 +260,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             return offers;
         }
         return null;
+    }
+
+    private void refreshData() {
+        emptyStateContainer.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 }

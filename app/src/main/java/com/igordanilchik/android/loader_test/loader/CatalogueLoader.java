@@ -3,6 +3,7 @@ package com.igordanilchik.android.loader_test.loader;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
 import com.igordanilchik.android.loader_test.api.ClientApi;
 import com.igordanilchik.android.loader_test.model.Catalogue;
@@ -10,6 +11,7 @@ import com.igordanilchik.android.loader_test.model.Catalogue;
 import java.io.IOException;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
@@ -45,14 +47,18 @@ public class CatalogueLoader extends AsyncTaskLoader<Catalogue> {
 
         ClientApi client = retrofit.create(ClientApi.class);
         Call<Catalogue> catalogue = client.loadCatalogue(API_KEY);
-        Catalogue result = null;
+        Response<Catalogue> response = null;
         try {
-            result = catalogue.execute().body();
+            response = catalogue.execute();
         }
         catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Network error: ", e);
         }
 
+        Catalogue result = null;
+        if (response != null && response.isSuccessful()) {
+            result = response.body();
+        }
         return result;
     }
 

@@ -8,4 +8,5 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="offer_price">Price: %s</string>
     <string name="offer_weight">Weight: %s</string>
+    <string name="title_for_empty_state">No network connection</string>
 </resources>
