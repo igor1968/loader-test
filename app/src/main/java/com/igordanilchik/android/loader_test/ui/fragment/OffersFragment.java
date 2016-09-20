@@ -15,6 +15,7 @@ import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.model.Offer;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
+import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
 import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
 import org.parceler.Parcels;
@@ -84,12 +85,11 @@ public class OffersFragment extends Fragment {
 
         adapter = new OffersAdapter(this.getContext(), offers);
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new OffersAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                offerClicked(position);
-            }
-        });
+        adapter.setOnItemClickListener((view, position) -> offerClicked(position));
+
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
     }
 
     private void offerClicked(int position) {

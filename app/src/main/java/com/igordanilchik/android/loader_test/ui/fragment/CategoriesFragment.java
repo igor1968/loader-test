@@ -15,6 +15,7 @@ import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.model.Category;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
+import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
 import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class CategoriesFragment extends Fragment {
 
     @BindView(R.id.catalogue_recycler_view)
     RecyclerView recyclerView;
+
     CategoriesAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
 
@@ -63,6 +65,7 @@ public class CategoriesFragment extends Fragment {
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_catalogue, container, false);
         this.unbinder = ButterKnife.bind(this, view);
+
         return view;
     }
 
@@ -71,7 +74,7 @@ public class CategoriesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (listener != null && listener.getContent() != null) {
-            categories = listener.getContent();
+                categories = listener.getContent();
         }
 
         recyclerView.setHasFixedSize(true);
@@ -80,12 +83,10 @@ public class CategoriesFragment extends Fragment {
 
         adapter = new CategoriesAdapter(this.getContext(), categories);
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new CategoriesAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                categoryClicked(position);
-            }
-        });
+        adapter.setOnItemClickListener((view, position) -> categoryClicked(position));
+
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
     @Override
@@ -112,5 +113,4 @@ public class CategoriesFragment extends Fragment {
         fragment.setArguments(args);
         FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
     }
-
 }

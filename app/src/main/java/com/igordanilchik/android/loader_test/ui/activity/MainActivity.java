@@ -76,12 +76,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getSupportActionBar().setHomeButtonEnabled(true);
 
         drawer.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem item) {
-                        selectDrawerItem(item);
-                        return false;
-                    }
+                item -> {
+                    selectDrawerItem(item);
+                    return false;
                 }
         );
 
@@ -233,7 +230,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (dataset.getOffers() != null) {
                 List<Offer> offers = dataset.getOffers();
                 for (Category category : categories) {
-                    int id = category.getId();
                     for (Offer offer : offers) {
                         if (offer.getCategoryId() == category.getId() && offer.getPictureUrl() != null) {
                             category.setPictureUrl(offer.getPictureUrl());
@@ -262,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return null;
     }
 
-    private void refreshData() {
+    public void refreshData() {
         emptyStateContainer.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         getSupportLoaderManager().initLoader(0, null, this);
