@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">loader-test</string>
-    <string name="app_name_subtitle">loader_test</string>
     <string name="menu_catalogue">Каталог</string>
     <string name="menu_contacts">Контакты</string>
     <string name="menu_about">О приложении</string>
