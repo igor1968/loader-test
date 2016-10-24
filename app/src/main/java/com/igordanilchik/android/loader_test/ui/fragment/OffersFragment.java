@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.model.Offer;
+import com.igordanilchik.android.loader_test.data.Offer;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;

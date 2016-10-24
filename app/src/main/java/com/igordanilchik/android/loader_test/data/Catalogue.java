@@ -1,4 +1,4 @@
-package com.igordanilchik.android.loader_test.model;
+package com.igordanilchik.android.loader_test.data;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;

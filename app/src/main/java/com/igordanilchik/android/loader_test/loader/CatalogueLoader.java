@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.igordanilchik.android.loader_test.api.ClientApi;
-import com.igordanilchik.android.loader_test.model.Catalogue;
+import com.igordanilchik.android.loader_test.data.source.remote.ClientApi;
+import com.igordanilchik.android.loader_test.data.Catalogue;
 
 import java.io.IOException;
 

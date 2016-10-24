@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.model.Category;
+import com.igordanilchik.android.loader_test.data.Category;
 
 import java.util.List;
 

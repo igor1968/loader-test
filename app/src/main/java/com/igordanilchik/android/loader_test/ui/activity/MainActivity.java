@@ -20,10 +20,10 @@ import android.widget.ProgressBar;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
-import com.igordanilchik.android.loader_test.model.Catalogue;
-import com.igordanilchik.android.loader_test.model.Category;
-import com.igordanilchik.android.loader_test.model.Offer;
-import com.igordanilchik.android.loader_test.model.Shop;
+import com.igordanilchik.android.loader_test.data.Catalogue;
+import com.igordanilchik.android.loader_test.data.Category;
+import com.igordanilchik.android.loader_test.data.Offer;
+import com.igordanilchik.android.loader_test.data.Shop;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.ContactsFragment;

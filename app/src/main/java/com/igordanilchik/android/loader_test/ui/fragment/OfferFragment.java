@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.model.Offer;
+import com.igordanilchik.android.loader_test.data.Offer;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 
 import org.parceler.Parcels;
@@ -61,7 +61,7 @@ public class OfferFragment extends Fragment {
             price.setText(getString(R.string.offer_price, offer.getPrice()));
 
             if (offer.getParam() != null) {
-                String weightStr = offer.getParam().get("Вес");
+                String weightStr = offer.getParam().get(getString(R.string.param_name_weight));
                 if (weightStr != null) {
                     weight.setText(getString(R.string.offer_weight, weightStr));
                 }

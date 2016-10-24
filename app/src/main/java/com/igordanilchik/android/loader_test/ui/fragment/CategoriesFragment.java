@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.model.Category;
+import com.igordanilchik.android.loader_test.data.Category;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;

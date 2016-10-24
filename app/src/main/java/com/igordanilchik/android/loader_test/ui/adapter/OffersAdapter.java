@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.model.Offer;
+import com.igordanilchik.android.loader_test.data.Offer;
 
 import java.util.List;
 
@@ -83,7 +83,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
         holder.price.setText(context.getString(R.string.offer_price, offers.get(position).getPrice()));
 
         if (offers.get(position).getParam() != null) {
-            String weight = offers.get(position).getParam().get("Вес");
+            String weight = offers.get(position).getParam().get(context.getString(R.string.param_name_weight));
             if (weight != null) {
                 holder.weight.setText(context.getString(R.string.offer_weight, weight));
             }

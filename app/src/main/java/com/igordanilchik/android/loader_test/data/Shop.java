@@ -1,4 +1,4 @@
-package com.igordanilchik.android.loader_test.model;
+package com.igordanilchik.android.loader_test.data;
 
 import org.parceler.Parcel;
 import org.simpleframework.xml.ElementList;
