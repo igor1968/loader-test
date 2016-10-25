@@ -25,7 +25,7 @@ public class ShopDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + ShopPersistenceContract.OfferEntry.TABLE_NAME + " (" +
                     ShopPersistenceContract.OfferEntry._ID + INTEGER_TYPE + " PRIMARY KEY," +
                     ShopPersistenceContract.OfferEntry.COLUMN_NAME_OFFER_ID + INTEGER_TYPE + " UNIQUE NOT NULL" + COMMA_SEP +
-                    ShopPersistenceContract.OfferEntry.COLUMN_NAME_CATEGORY_ID + INTEGER_TYPE + " UNIQUE NOT NULL" + COMMA_SEP +
+                    ShopPersistenceContract.OfferEntry.COLUMN_NAME_CATEGORY_ID + INTEGER_TYPE + COMMA_SEP +
                     ShopPersistenceContract.OfferEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     ShopPersistenceContract.OfferEntry.COLUMN_NAME_PICTURE_URL + TEXT_TYPE + COMMA_SEP +
                     ShopPersistenceContract.OfferEntry.COLUMN_NAME_WEIGHT + TEXT_TYPE + COMMA_SEP +

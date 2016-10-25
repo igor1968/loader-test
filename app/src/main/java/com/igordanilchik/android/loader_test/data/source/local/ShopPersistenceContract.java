@@ -41,6 +41,11 @@ public final class ShopPersistenceContract {
         public static Uri buildUri() {
             return CONTENT_URI.buildUpon().build();
         }
+
+        public static final int COL_ID = 0;
+        public static final int COL_CATEGORY_ID = 1;
+        public static final int COL_TITLE = 2;
+        public static final int COL_PICTURE_URL = 3;
     }
 
     public static final class OfferEntry implements BaseColumns {

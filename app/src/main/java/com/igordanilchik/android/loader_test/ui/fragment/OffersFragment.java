@@ -50,7 +50,7 @@ public class OffersFragment extends Fragment {
 
     public interface OnContentUpdate {
         @Nullable
-        public List<Offer> getContent(int categoryId);
+        public List<Offer> getCategory(int categoryId);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class OffersFragment extends Fragment {
         int categoryId = bundle.getInt(MainActivity.ARG_DATA);
 
         if (listener != null) {
-            offers = listener.getContent(categoryId);
+            offers = listener.getCategory(categoryId);
         }
 
         recyclerView.setHasFixedSize(true);

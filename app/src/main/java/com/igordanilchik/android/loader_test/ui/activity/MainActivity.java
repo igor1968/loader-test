@@ -19,11 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
 import com.igordanilchik.android.loader_test.data.Catalogue;
 import com.igordanilchik.android.loader_test.data.Category;
 import com.igordanilchik.android.loader_test.data.Offer;
 import com.igordanilchik.android.loader_test.data.Shop;
+import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
+import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.ContactsFragment;
@@ -39,11 +40,12 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Catalogue>,
-        CategoriesFragment.OnContentUpdate, OffersFragment.OnContentUpdate {
+        OffersFragment.OnContentUpdate {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     public static final String ARG_CURRENT_FRAGMENT_TAG = "ARG_CURRENT_FRAGMENT_TAG";
     public static final String ARG_DATA = "ARG_DATA";
+    private static final int CATALOGUE_LOADER = 0;
 
 
     @BindView(R.id.drawer_layout)
@@ -157,10 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (data != null && data.getShop() != null) {
             dataset = data.getShop();
             if (dataset.getCategories() != null) {
-                CategoriesFragment fragment = (CategoriesFragment) getSupportFragmentManager().findFragmentByTag(CategoriesFragment.class.getName());
-                if (fragment != null) {
-                    fragment.updateContent(getContent());
-                }
+                new LoaderProvider(this).add(getCategories());
             }
         } else {
             emptyStateContainer.setVisibility(View.VISIBLE);
@@ -222,9 +221,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    @Override
     @Nullable
-    public List<Category> getContent() {
+    public List<Category> getCategories() {
         if (dataset != null) {
             List<Category> categories = dataset.getCategories();
             if (dataset.getOffers() != null) {
@@ -245,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Nullable
     @Override
-    public List<Offer> getContent(int categoryId) {
+    public List<Offer> getCategory(int categoryId) {
         if (dataset != null && dataset.getOffers() != null) {
             ArrayList<Offer> offers = new ArrayList<>();
             for (Offer offer : dataset.getOffers()) {
@@ -261,6 +259,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void refreshData() {
         emptyStateContainer.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        getSupportLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(CATALOGUE_LOADER, null, this);
     }
 }

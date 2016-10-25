@@ -1,10 +1,12 @@
 package com.igordanilchik.android.loader_test.ui.fragment;
 
-import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,32 +14,31 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.data.Category;
+import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
+import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
 import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class CategoriesFragment extends Fragment {
+public class CategoriesFragment extends Fragment implements CategoriesAdapter.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = CategoriesFragment.class.getSimpleName();
+    private static final int CATEGORIES_LOADER = 1;
 
     @BindView(R.id.catalogue_recycler_view)
     RecyclerView recyclerView;
-
-    CategoriesAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
-
     private Unbinder unbinder;
-    @NonNull
-    private List<Category> categories = new ArrayList<>();
+
+    CategoriesAdapter cursorAdapter;
+    @Nullable
+    Cursor cursor;
 
     @NonNull
     public static CategoriesFragment newInstance() {
@@ -45,27 +46,10 @@ public class CategoriesFragment extends Fragment {
         return f;
     }
 
-    @Nullable
-    private OnContentUpdate listener;
-
-    public interface OnContentUpdate {
-        @Nullable
-        List<Category> getContent();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnContentUpdate) {
-            listener = (OnContentUpdate) context;
-        }
-    }
-
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_catalogue, container, false);
         this.unbinder = ButterKnife.bind(this, view);
-
         return view;
     }
 
@@ -73,17 +57,11 @@ public class CategoriesFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (listener != null && listener.getContent() != null) {
-                categories = listener.getContent();
-        }
-
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new CategoriesAdapter(this.getContext(), categories);
-        recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener((view, position) -> categoryClicked(position));
+        getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
 
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
@@ -95,22 +73,45 @@ public class CategoriesFragment extends Fragment {
         unbinder.unbind();
     }
 
-    public void updateContent(@Nullable List<Category> categories) {
-        if (categories != null) {
-            this.categories.clear();
-            this.categories.addAll(categories);
-            this.adapter.notifyDataSetChanged();
-        }
+    @Override
+    public void onItemClick(View itemView, int position) {
+        categoryClicked(position);
     }
 
     private void categoryClicked(int position) {
-        int categoryId = categories.get(position).getId();
+        if (cursor != null) {
+            cursor.moveToPosition(position);
 
-        Bundle args = new Bundle();
-        args.putInt(MainActivity.ARG_DATA, categoryId);
+            int categoryId = cursor.getInt(ShopPersistenceContract.CategoryEntry.COL_CATEGORY_ID);
 
-        OffersFragment fragment = OffersFragment.newInstance();
-        fragment.setArguments(args);
-        FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
+            Bundle args = new Bundle();
+            args.putInt(MainActivity.ARG_DATA, categoryId);
+
+            OffersFragment fragment = OffersFragment.newInstance();
+            fragment.setArguments(args);
+            FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new LoaderProvider(getActivity()).createCategoriesLoader();
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null) {
+            if (data.moveToLast()) {
+                cursor = data;
+                //TODO: optimize
+                cursorAdapter = new CategoriesAdapter(getContext(), cursor, this);
+                recyclerView.setAdapter(cursorAdapter);
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        cursor = null;
     }
 }

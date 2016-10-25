@@ -13,13 +13,17 @@ import android.support.annotation.Nullable;
 import com.igordanilchik.android.loader_test.data.source.local.ShopDbHelper;
 import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
 
+import java.util.List;
+
 public class ShopProvider extends ContentProvider {
     private static final int CATEGORY = 100;
     private static final int CATEGORY_ID = 101;
     private static final int OFFER = 200;
     private static final int OFFER_ID = 201;
+    private static final int OFFER_BY_CATEGORY_ID = 202;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
+
 
     private ShopDbHelper dbHelper;
 
@@ -30,6 +34,7 @@ public class ShopProvider extends ContentProvider {
         matcher.addURI(content, ShopPersistenceContract.PATH_CATEGORY, CATEGORY);
         matcher.addURI(content, ShopPersistenceContract.PATH_CATEGORY + "/#", CATEGORY_ID);
         matcher.addURI(content, ShopPersistenceContract.PATH_OFFER, OFFER);
+        matcher.addURI(content, ShopPersistenceContract.PATH_OFFER + "/" + ShopPersistenceContract.PATH_CATEGORY + "/#", OFFER_BY_CATEGORY_ID);
         matcher.addURI(content, ShopPersistenceContract.PATH_OFFER + "/#", OFFER_ID);
         return matcher;
 
@@ -53,6 +58,8 @@ public class ShopProvider extends ContentProvider {
                 return ShopPersistenceContract.OfferEntry.CONTENT_TYPE;
             case OFFER_ID:
                 return ShopPersistenceContract.OfferEntry.CONTENT_ITEM_TYPE;
+            case OFFER_BY_CATEGORY_ID:
+                return ShopPersistenceContract.OfferEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -77,9 +84,9 @@ public class ShopProvider extends ContentProvider {
             case CATEGORY_ID: {
                 String[] where = {uri.getLastPathSegment()};
                 retCursor = dbHelper.getReadableDatabase().query(
-                        ShopPersistenceContract.OfferEntry.TABLE_NAME,
+                        ShopPersistenceContract.CategoryEntry.TABLE_NAME,
                         projection,
-                        ShopPersistenceContract.OfferEntry.COLUMN_NAME_CATEGORY_ID + " = ?",
+                        ShopPersistenceContract.CategoryEntry.COLUMN_NAME_CATEGORY_ID + " = ?",
                         where,
                         null,
                         null,
@@ -104,6 +111,19 @@ public class ShopProvider extends ContentProvider {
                         ShopPersistenceContract.OfferEntry.TABLE_NAME,
                         projection,
                         ShopPersistenceContract.OfferEntry.COLUMN_NAME_OFFER_ID + " = ?",
+                        where,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case OFFER_BY_CATEGORY_ID: {
+                String[] where = {uri.getLastPathSegment()};
+                retCursor = dbHelper.getReadableDatabase().query(
+                        ShopPersistenceContract.OfferEntry.TABLE_NAME,
+                        projection,
+                        ShopPersistenceContract.OfferEntry.COLUMN_NAME_CATEGORY_ID + " = ?",
                         where,
                         null,
                         null,
@@ -182,10 +202,14 @@ public class ShopProvider extends ContentProvider {
         int rowsUpdated;
 
         switch (match) {
-            case CATEGORY:
-                rowsUpdated = db.update(ShopPersistenceContract.CategoryEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
+            case CATEGORY_ID: {
+                List<String> segments = uri.getPathSegments();
+                selection = addSelection(selection,
+                        ShopPersistenceContract.CategoryEntry.COLUMN_NAME_CATEGORY_ID + " = " + segments.get(segments.size() - 1));
+                rowsUpdated = db.update(ShopPersistenceContract.CategoryEntry.TABLE_NAME, values,
+                        selection, selectionArgs);
                 break;
+            }
             case OFFER:
                 rowsUpdated = db.update(ShopPersistenceContract.OfferEntry.TABLE_NAME, values, selection,
                         selectionArgs);
@@ -199,4 +223,18 @@ public class ShopProvider extends ContentProvider {
         return rowsUpdated;
     }
 
+    private String addSelection(String currentSelection, final String toAdd)
+    {
+        if (currentSelection == null)
+        {
+            currentSelection = "";
+        }
+
+        if (!currentSelection.isEmpty())
+        {
+            currentSelection += " AND ";
+        }
+
+        return currentSelection + toAdd;
+    }
 }

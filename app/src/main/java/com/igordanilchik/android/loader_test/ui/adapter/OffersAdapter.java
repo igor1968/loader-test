@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 
 public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder> {
 
-    private static final String LOG_TAG = CategoriesAdapter.class.getSimpleName();
+    private static final String LOG_TAG = OffersAdapter.class.getSimpleName();
     @NonNull
     private List<Offer> offers;
     @NonNull
