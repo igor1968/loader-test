@@ -1,10 +1,12 @@
 package com.igordanilchik.android.loader_test.ui.fragment;
 
-import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,53 +14,40 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.data.Offer;
+import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
+import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
+import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
-import com.igordanilchik.android.loader_test.utils.FragmentUtils;
-
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class OffersFragment extends Fragment {
+public class OffersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OffersAdapter.OnItemClickListener {
 
     private static final String LOG_TAG = OffersFragment.class.getSimpleName();
+    private static final int OFFERS_LOADER = 2;
 
     @BindView(R.id.offers_recycler_view)
     RecyclerView recyclerView;
-    OffersAdapter adapter;
     RecyclerView.LayoutManager layoutManager;
     private Unbinder unbinder;
-    @NonNull
-    private List<Offer> offers = new ArrayList<>();
 
-    @NonNull
-    public static OffersFragment newInstance() {
-        OffersFragment f = new OffersFragment();
-        return f;
-    }
-
+    private int categoryId;
     @Nullable
-    private OnContentUpdate listener;
+    Cursor cursor;
+    OffersAdapter cursorAdapter;
 
-    public interface OnContentUpdate {
-        @Nullable
-        public List<Offer> getCategory(int categoryId);
-    }
+    @NonNull
+    public static OffersFragment newInstance(int categoryId) {
+        Bundle args = new Bundle();
+        args.putInt(MainActivity.ARG_CATEGORY_ID, categoryId);
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnContentUpdate) {
-            listener = (OnContentUpdate) context;
-        }
+        OffersFragment f = new OffersFragment();
+        f.setArguments(args);
+        return f;
     }
 
     @Override
@@ -73,34 +62,38 @@ public class OffersFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Bundle bundle = getArguments();
-        int categoryId = bundle.getInt(MainActivity.ARG_DATA);
-
-        if (listener != null) {
-            offers = listener.getCategory(categoryId);
+        if (bundle != null && bundle.containsKey(MainActivity.ARG_CATEGORY_ID)) {
+            categoryId = bundle.getInt(MainActivity.ARG_CATEGORY_ID);
         }
 
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new OffersAdapter(this.getContext(), offers);
-        recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener((view, position) -> offerClicked(position));
+        if (savedInstanceState == null) {
+            getActivity().getSupportLoaderManager().initLoader(OFFERS_LOADER, null, this);
+        } else {
+            getActivity().getSupportLoaderManager().restartLoader(OFFERS_LOADER, savedInstanceState, this);
+        }
 
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
+    }
 
+    @Override
+    public void onItemClick(View itemView, int position) {
+        offerClicked(position);
     }
 
     private void offerClicked(int position) {
-        Offer offer = offers.get(position);
+        if (cursor != null) {
+            cursor.moveToPosition(position);
 
-        Bundle args = new Bundle();
-        args.putParcelable(MainActivity.ARG_DATA, Parcels.wrap(offer));
-
-        OfferFragment fragment = OfferFragment.newInstance();
-        fragment.setArguments(args);
-        FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
+            int offerId = cursor.getInt(ShopPersistenceContract.OfferEntry.COL_OFFER_ID);
+            if (getActivity() instanceof CategoriesContract) {
+                ((CategoriesContract)getActivity()).showOffer(offerId);
+            }
+        }
     }
 
     @Override
@@ -109,4 +102,28 @@ public class OffersFragment extends Fragment {
         unbinder.unbind();
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new LoaderProvider(getActivity()).createOffersLoader(categoryId);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null) {
+            if (data.moveToLast()) {
+                cursor = data;
+                if (cursorAdapter == null) {
+                    cursorAdapter = new OffersAdapter(getContext(), cursor, this);
+                    recyclerView.setAdapter(cursorAdapter);
+                } else {
+                    cursorAdapter.swapCursor(cursor);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        cursor = null;
+    }
 }

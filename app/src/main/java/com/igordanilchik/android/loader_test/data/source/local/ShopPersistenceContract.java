@@ -34,8 +34,12 @@ public final class ShopPersistenceContract {
                 COLUMN_NAME_TITLE,
                 COLUMN_NAME_PICTURE_URL};
 
-        public static Uri buildUriWith(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildUri(long categoryId) {
+            return ContentUris.withAppendedId(CONTENT_URI, categoryId);
+        }
+
+        public static Uri buildOffersUri(long categoryId) {
+            return ContentUris.withAppendedId(CONTENT_URI.buildUpon().appendPath(PATH_OFFER).build(), categoryId);
         }
 
         public static Uri buildUri() {
@@ -74,12 +78,22 @@ public final class ShopPersistenceContract {
                 COLUMN_NAME_DESCRIPTION
         };
 
-        public static Uri buildUriWith(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildUri(long offerId) {
+            return ContentUris.withAppendedId(CONTENT_URI, offerId);
         }
 
         public static Uri buildUri() {
             return CONTENT_URI.buildUpon().build();
         }
+
+        public static final int COL_ID = 0;
+        public static final int COL_OFFER_ID = 1;
+        public static final int COL_CATEGORY_ID = 2;
+        public static final int COL_TITLE = 3;
+        public static final int COL_PICTURE_URL = 4;
+        public static final int COL_PRICE = 5;
+        public static final int COL_WEIGHT = 6;
+        public static final int COL_DESCRIPTION = 7;
+
     }
 }

@@ -20,31 +20,27 @@ import android.widget.ProgressBar;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.Catalogue;
-import com.igordanilchik.android.loader_test.data.Category;
-import com.igordanilchik.android.loader_test.data.Offer;
-import com.igordanilchik.android.loader_test.data.Shop;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
 import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
+import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.ContactsFragment;
+import com.igordanilchik.android.loader_test.ui.fragment.OfferFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.OffersFragment;
-
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Catalogue>,
-        OffersFragment.OnContentUpdate {
+public class MainActivity extends AppCompatActivity implements CategoriesContract,
+        LoaderManager.LoaderCallbacks<Catalogue> {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     public static final String ARG_CURRENT_FRAGMENT_TAG = "ARG_CURRENT_FRAGMENT_TAG";
-    public static final String ARG_DATA = "ARG_DATA";
+    public static final String ARG_CATEGORY_ID = "ARG_CATEGORY_ID";
+    public static final String ARG_OFFER_ID = "ARG_OFFER_ID";
     private static final int CATALOGUE_LOADER = 0;
 
 
@@ -62,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ActionBarDrawerToggle drawerToggle;
     @Nullable
     Fragment currentFragment = null;
-    @Nullable
-    private Shop dataset;
 
 
     @Override
@@ -74,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         drawer.setNavigationItemSelectedListener(
                 item -> {
@@ -99,11 +95,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     updateDrawer();
                 }
             }
-            if (savedInstanceState.get(ARG_DATA) != null) {
-                dataset = Parcels.unwrap(savedInstanceState.getParcelable(ARG_DATA));
-            } else {
-                refreshData();
-            }
         }
     }
 
@@ -112,9 +103,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onSaveInstanceState(bundle);
         if (currentFragment != null) {
             bundle.putString(ARG_CURRENT_FRAGMENT_TAG, currentFragment.getTag());
-        }
-        if (dataset != null) {
-            bundle.putParcelable(ARG_DATA, Parcels.wrap(dataset));
         }
     }
 
@@ -157,12 +145,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<Catalogue> loader, Catalogue data) {
         progressBar.setVisibility(View.GONE);
         if (data != null && data.getShop() != null) {
-            dataset = data.getShop();
-            if (dataset.getCategories() != null) {
-                new LoaderProvider(this).add(getCategories());
-            }
-        } else {
-            emptyStateContainer.setVisibility(View.VISIBLE);
+            new LoaderProvider(this).add(data.getShop());
         }
     }
 
@@ -221,44 +204,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    @Nullable
-    public List<Category> getCategories() {
-        if (dataset != null) {
-            List<Category> categories = dataset.getCategories();
-            if (dataset.getOffers() != null) {
-                List<Offer> offers = dataset.getOffers();
-                for (Category category : categories) {
-                    for (Offer offer : offers) {
-                        if (offer.getCategoryId() == category.getId() && offer.getPictureUrl() != null) {
-                            category.setPictureUrl(offer.getPictureUrl());
-                            break;
-                        }
-                    }
-                }
-            }
-            return categories;
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public List<Offer> getCategory(int categoryId) {
-        if (dataset != null && dataset.getOffers() != null) {
-            ArrayList<Offer> offers = new ArrayList<>();
-            for (Offer offer : dataset.getOffers()) {
-                if (offer.getCategoryId() == categoryId) {
-                    offers.add(offer);
-                }
-            }
-            return offers;
-        }
-        return null;
-    }
-
     public void refreshData() {
-        emptyStateContainer.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         getSupportLoaderManager().initLoader(CATALOGUE_LOADER, null, this);
+    }
+
+    @Override
+    public void showCategory(int categoryId) {
+        OffersFragment fragment = OffersFragment.newInstance(categoryId);
+        FragmentUtils.replaceFragment(this, R.id.frame_content, fragment, true);
+
+    }
+
+    @Override
+    public void showOffer(int offerId) {
+        OfferFragment fragment = OfferFragment.newInstance(offerId);
+        FragmentUtils.replaceFragment(this, R.id.frame_content, fragment, true);
+    }
+
+    @Override
+    public void showEmptyState() {
+        emptyStateContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideEmptyState() {
+        emptyStateContainer.setVisibility(View.GONE);
     }
 }

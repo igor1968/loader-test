@@ -16,10 +16,9 @@ import android.view.ViewGroup;
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
 import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
-import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
+import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
-import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,12 +39,6 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     @Nullable
     Cursor cursor;
 
-    @NonNull
-    public static CategoriesFragment newInstance() {
-        CategoriesFragment f = new CategoriesFragment();
-        return f;
-    }
-
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_catalogue, container, false);
@@ -61,7 +54,11 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
+        if (savedInstanceState == null) {
+            getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
+        } else {
+            getActivity().getSupportLoaderManager().restartLoader(CATEGORIES_LOADER, savedInstanceState, this);
+        }
 
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
@@ -83,13 +80,9 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
             cursor.moveToPosition(position);
 
             int categoryId = cursor.getInt(ShopPersistenceContract.CategoryEntry.COL_CATEGORY_ID);
-
-            Bundle args = new Bundle();
-            args.putInt(MainActivity.ARG_DATA, categoryId);
-
-            OffersFragment fragment = OffersFragment.newInstance();
-            fragment.setArguments(args);
-            FragmentUtils.replaceFragment(getActivity(), R.id.frame_content, fragment, true);
+            if (getActivity() instanceof CategoriesContract) {
+                ((CategoriesContract)getActivity()).showCategory(categoryId);
+            }
         }
     }
 
@@ -103,9 +96,17 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         if (data != null) {
             if (data.moveToLast()) {
                 cursor = data;
-                //TODO: optimize
-                cursorAdapter = new CategoriesAdapter(getContext(), cursor, this);
-                recyclerView.setAdapter(cursorAdapter);
+
+                if (cursorAdapter == null) {
+                    cursorAdapter = new CategoriesAdapter(getContext(), cursor, this);
+                    recyclerView.setAdapter(cursorAdapter);
+                } else {
+                    cursorAdapter.swapCursor(cursor);
+                }
+            } else {
+                if (getActivity() instanceof CategoriesContract) {
+                    ((CategoriesContract) getActivity()).showEmptyState();
+                }
             }
         }
     }

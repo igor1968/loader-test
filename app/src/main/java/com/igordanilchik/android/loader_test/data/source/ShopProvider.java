@@ -34,8 +34,8 @@ public class ShopProvider extends ContentProvider {
         matcher.addURI(content, ShopPersistenceContract.PATH_CATEGORY, CATEGORY);
         matcher.addURI(content, ShopPersistenceContract.PATH_CATEGORY + "/#", CATEGORY_ID);
         matcher.addURI(content, ShopPersistenceContract.PATH_OFFER, OFFER);
-        matcher.addURI(content, ShopPersistenceContract.PATH_OFFER + "/" + ShopPersistenceContract.PATH_CATEGORY + "/#", OFFER_BY_CATEGORY_ID);
         matcher.addURI(content, ShopPersistenceContract.PATH_OFFER + "/#", OFFER_ID);
+        matcher.addURI(content, ShopPersistenceContract.PATH_CATEGORY + "/" + ShopPersistenceContract.PATH_OFFER + "/#", OFFER_BY_CATEGORY_ID);
         return matcher;
 
     }
@@ -150,7 +150,7 @@ public class ShopProvider extends ContentProvider {
                 long id = db.insert(ShopPersistenceContract.CategoryEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     id = values.getAsInteger(ShopPersistenceContract.CategoryEntry.COLUMN_NAME_CATEGORY_ID);
-                    returnUri = ShopPersistenceContract.CategoryEntry.buildUriWith(id);
+                    returnUri = ShopPersistenceContract.CategoryEntry.buildUri(id);
                 } else {
                     throw new SQLException("Failed to insert row into " + uri);
                 }
@@ -160,7 +160,7 @@ public class ShopProvider extends ContentProvider {
                 long id = db.insert(ShopPersistenceContract.OfferEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     id = values.getAsInteger(ShopPersistenceContract.OfferEntry.COLUMN_NAME_OFFER_ID);
-                    returnUri = ShopPersistenceContract.OfferEntry.buildUriWith(id);
+                    returnUri = ShopPersistenceContract.OfferEntry.buildUri(id);
                 } else {
                     throw new SQLException("Failed to insert row into " + uri);
                 }
@@ -210,10 +210,14 @@ public class ShopProvider extends ContentProvider {
                         selection, selectionArgs);
                 break;
             }
-            case OFFER:
+            case OFFER_ID: {
+                List<String> segments = uri.getPathSegments();
+                selection = addSelection(selection,
+                        ShopPersistenceContract.OfferEntry.COLUMN_NAME_OFFER_ID + " = " + segments.get(segments.size() - 1));
                 rowsUpdated = db.update(ShopPersistenceContract.OfferEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

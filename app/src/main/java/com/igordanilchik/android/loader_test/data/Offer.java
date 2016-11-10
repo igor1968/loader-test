@@ -1,6 +1,5 @@
 package com.igordanilchik.android.loader_test.data;
 
-import org.parceler.Parcel;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
@@ -8,7 +7,6 @@ import org.simpleframework.xml.Root;
 
 import java.util.HashMap;
 
-@Parcel
 @Root(name = "offer", strict = false)
 public class Offer {
 

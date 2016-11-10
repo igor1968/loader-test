@@ -43,7 +43,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         public ViewHolder(final View itemView) {
             super(itemView);
             view = itemView;
-            ButterKnife.bind(this, view);
+            ButterKnife.bind(this, itemView);
         }
     }
 
@@ -80,7 +80,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
             if (listener != null)
                 listener.onItemClick(holder.view, position);
         });
-
     }
 
     @Override
@@ -89,5 +88,10 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
             return cursor.getCount();
         }
         return 0;
+    }
+
+    public void swapCursor(@NonNull Cursor cursor) {
+        this.cursor = cursor;
+        notifyDataSetChanged();
     }
 }

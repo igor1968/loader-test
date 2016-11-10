@@ -16,11 +16,13 @@ public class OfferValues {
         values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_CATEGORY_ID, offer.getCategoryId());
         values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_TITLE, offer.getName());
         values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_PICTURE_URL, offer.getPictureUrl());
-        values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_PRICE, offer.getPictureUrl());
-        values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_TITLE, offer.getPrice());
-        String weight = offer.getParam().get(ctx.getString(R.string.param_name_weight));
-        if (weight != null) {
-            values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_WEIGHT, weight);
+        values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_PRICE, offer.getPrice());
+        values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_DESCRIPTION, offer.getDescription());
+        if (offer.getParam() != null) {
+            String weight = offer.getParam().get(ctx.getString(R.string.param_name_weight));
+            if (weight != null) {
+                values.put(ShopPersistenceContract.OfferEntry.COLUMN_NAME_WEIGHT, weight);
+            }
         }
         return values;
     }

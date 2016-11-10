@@ -1,11 +1,9 @@
 package com.igordanilchik.android.loader_test.data;
 
-import org.parceler.Parcel;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
-@Parcel
 @Root(name = "categories", strict = false)
 public class Category {
 
