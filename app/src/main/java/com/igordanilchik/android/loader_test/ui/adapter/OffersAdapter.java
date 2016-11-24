@@ -20,11 +20,9 @@ import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceCo
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder> {
+public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewHolder> {
 
     private static final String LOG_TAG = OffersAdapter.class.getSimpleName();
-    @NonNull
-    private Cursor cursor;
     @NonNull
     private Context context;
     @Nullable
@@ -32,7 +30,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
 
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+        void onItemClick(View itemView, int offerId);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -54,8 +52,8 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
         }
     }
 
-    public OffersAdapter(@NonNull Context ctx, @NonNull Cursor cursor, @Nullable OnItemClickListener listener) {
-        this.cursor = cursor;
+    public OffersAdapter(@NonNull Context ctx, @Nullable OnItemClickListener listener) {
+        super(null);
         context = ctx;
         this.listener = listener;
     }
@@ -69,8 +67,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        cursor.moveToPosition(position);
+    protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
         holder.name.setText(cursor.getString(ShopPersistenceContract.OfferEntry.COL_TITLE));
         holder.price.setText(context.getString(R.string.offer_price, cursor.getString(ShopPersistenceContract.OfferEntry.COL_PRICE)));
 
@@ -89,22 +86,11 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.ViewHolder
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.image);
 
+        int offerId = cursor.getInt(ShopPersistenceContract.OfferEntry.COL_OFFER_ID);
+
         holder.view.setOnClickListener(v -> {
             if (listener != null)
-                listener.onItemClick(holder.view, position);
+                listener.onItemClick(holder.view, offerId);
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        if (cursor != null) {
-            return cursor.getCount();
-        }
-        return 0;
-    }
-
-    public void swapCursor(@NonNull Cursor cursor) {
-        this.cursor = cursor;
-        notifyDataSetChanged();
     }
 }

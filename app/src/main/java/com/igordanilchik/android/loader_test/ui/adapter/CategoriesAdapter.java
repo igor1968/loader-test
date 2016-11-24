@@ -21,9 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder> {
-    @NonNull
-    private Cursor cursor;
+public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapter.ViewHolder> {
     @NonNull
     private Context context;
     @Nullable
@@ -47,8 +45,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         }
     }
 
-    public CategoriesAdapter(@NonNull Context ctx, @NonNull Cursor cursor, @Nullable OnItemClickListener listener) {
-        this.cursor = cursor;
+    public CategoriesAdapter(@NonNull Context ctx, @Nullable OnItemClickListener listener) {
+        super(null);
         context = ctx;
         this.listener = listener;
     }
@@ -62,9 +60,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        cursor.moveToPosition(position);
-
+    protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
         holder.title.setText(cursor.getString(ShopPersistenceContract.CategoryEntry.COL_TITLE));
         String url = cursor.getString(ShopPersistenceContract.CategoryEntry.COL_PICTURE_URL);
         Glide.with(context)
@@ -76,22 +72,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.icon);
 
+        int categoryId = cursor.getInt(ShopPersistenceContract.CategoryEntry.COL_CATEGORY_ID);
+
         holder.view.setOnClickListener(v -> {
             if (listener != null)
-                listener.onItemClick(holder.view, position);
+                listener.onItemClick(holder.view, categoryId);
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        if (cursor != null) {
-            return cursor.getCount();
-        }
-        return 0;
-    }
-
-    public void swapCursor(@NonNull Cursor cursor) {
-        this.cursor = cursor;
-        notifyDataSetChanged();
     }
 }

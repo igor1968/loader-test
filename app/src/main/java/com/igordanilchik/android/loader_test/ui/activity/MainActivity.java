@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.Catalogue;
@@ -50,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView drawer;
-    @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
     @BindView(R.id.empty_state_container)
     LinearLayout emptyStateContainer;
 
@@ -143,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
 
     @Override
     public void onLoadFinished(Loader<Catalogue> loader, Catalogue data) {
-        progressBar.setVisibility(View.GONE);
         if (data != null && data.getShop() != null) {
             new LoaderProvider(this).add(data.getShop());
         }
@@ -204,8 +200,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
         }
     }
 
+    @Override
     public void refreshData() {
-        progressBar.setVisibility(View.VISIBLE);
         getSupportLoaderManager().initLoader(CATALOGUE_LOADER, null, this);
     }
 

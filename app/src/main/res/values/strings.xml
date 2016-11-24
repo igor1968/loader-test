@@ -4,10 +4,10 @@
     <string name="menu_catalogue">Directory</string>
     <string name="menu_contacts">Contacts</string>
     <string name="menu_about">About</string>
-    <string name="drawer_open">Open naviagtion drawer</string>
+    <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="offer_price">Price: %s</string>
     <string name="offer_weight">Weight: %s</string>
-    <string name="title_for_empty_state">No network connection</string>
+    <string name="title_for_empty_state">No data available</string>
     <string name="param_name_weight" translatable="false">Вес</string>
 </resources>

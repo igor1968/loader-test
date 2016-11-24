@@ -7,15 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
-import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
 import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
@@ -32,17 +33,27 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
     @BindView(R.id.catalogue_recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.swipe_container)
+    SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.empty_state_container)
+    LinearLayout emptyStateContainer;
+
     RecyclerView.LayoutManager layoutManager;
     private Unbinder unbinder;
 
     CategoriesAdapter cursorAdapter;
-    @Nullable
-    Cursor cursor;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_catalogue, container, false);
         this.unbinder = ButterKnife.bind(this, view);
+
+        swipeContainer.setOnRefreshListener(this::refresh);
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         return view;
     }
 
@@ -53,6 +64,9 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+
+        cursorAdapter = new CategoriesAdapter(getContext(), this);
+        recyclerView.setAdapter(cursorAdapter);
 
         if (savedInstanceState == null) {
             getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
@@ -71,18 +85,15 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     }
 
     @Override
-    public void onItemClick(View itemView, int position) {
-        categoryClicked(position);
+    public void onItemClick(View itemView, int categoryId) {
+        if (getActivity() instanceof CategoriesContract) {
+            ((CategoriesContract)getActivity()).showCategory(categoryId);
+        }
     }
 
-    private void categoryClicked(int position) {
-        if (cursor != null) {
-            cursor.moveToPosition(position);
-
-            int categoryId = cursor.getInt(ShopPersistenceContract.CategoryEntry.COL_CATEGORY_ID);
-            if (getActivity() instanceof CategoriesContract) {
-                ((CategoriesContract)getActivity()).showCategory(categoryId);
-            }
+    private void refresh() {
+        if (getActivity() instanceof CategoriesContract) {
+            ((CategoriesContract) getActivity()).refreshData();
         }
     }
 
@@ -93,26 +104,31 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+  //      swipeContainer.setRefreshing(false);
         if (data != null) {
             if (data.moveToLast()) {
-                cursor = data;
-
-                if (cursorAdapter == null) {
-                    cursorAdapter = new CategoriesAdapter(getContext(), cursor, this);
-                    recyclerView.setAdapter(cursorAdapter);
-                } else {
-                    cursorAdapter.swapCursor(cursor);
-                }
+                cursorAdapter.changeCursor(data);
+                emptyState(false);
             } else {
-                if (getActivity() instanceof CategoriesContract) {
-                    ((CategoriesContract) getActivity()).showEmptyState();
-                }
+                emptyState(true);
+            }
+        } else {
+            emptyState(true);
+        }
+    }
+
+    private void emptyState(boolean show){
+        if (getActivity() instanceof CategoriesContract) {
+            if (show) {
+                ((CategoriesContract) getActivity()).showEmptyState();
+            } else {
+                ((CategoriesContract) getActivity()).hideEmptyState();
             }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        cursor = null;
+        cursorAdapter.changeCursor(null);
     }
 }

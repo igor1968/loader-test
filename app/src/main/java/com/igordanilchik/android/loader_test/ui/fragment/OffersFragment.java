@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
-import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
 import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
@@ -36,8 +35,6 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     private Unbinder unbinder;
 
     private int categoryId;
-    @Nullable
-    Cursor cursor;
     OffersAdapter cursorAdapter;
 
     @NonNull
@@ -70,10 +67,13 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        cursorAdapter = new OffersAdapter(getContext(), this);
+        recyclerView.setAdapter(cursorAdapter);
+
         if (savedInstanceState == null) {
-            getActivity().getSupportLoaderManager().initLoader(OFFERS_LOADER, null, this);
+            getActivity().getSupportLoaderManager().initLoader(OFFERS_LOADER + categoryId, null, this);
         } else {
-            getActivity().getSupportLoaderManager().restartLoader(OFFERS_LOADER, savedInstanceState, this);
+            getActivity().getSupportLoaderManager().restartLoader(OFFERS_LOADER + categoryId, savedInstanceState, this);
         }
 
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
@@ -81,18 +81,9 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
-    public void onItemClick(View itemView, int position) {
-        offerClicked(position);
-    }
-
-    private void offerClicked(int position) {
-        if (cursor != null) {
-            cursor.moveToPosition(position);
-
-            int offerId = cursor.getInt(ShopPersistenceContract.OfferEntry.COL_OFFER_ID);
-            if (getActivity() instanceof CategoriesContract) {
-                ((CategoriesContract)getActivity()).showOffer(offerId);
-            }
+    public void onItemClick(View itemView, int offerId) {
+        if (getActivity() instanceof CategoriesContract) {
+            ((CategoriesContract)getActivity()).showOffer(offerId);
         }
     }
 
@@ -111,19 +102,13 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null) {
             if (data.moveToLast()) {
-                cursor = data;
-                if (cursorAdapter == null) {
-                    cursorAdapter = new OffersAdapter(getContext(), cursor, this);
-                    recyclerView.setAdapter(cursorAdapter);
-                } else {
-                    cursorAdapter.swapCursor(cursor);
-                }
+                cursorAdapter.changeCursor(data);
             }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        cursor = null;
+        cursorAdapter.changeCursor(null);
     }
 }
