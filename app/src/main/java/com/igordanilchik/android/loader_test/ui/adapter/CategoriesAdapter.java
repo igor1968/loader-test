@@ -2,7 +2,6 @@ package com.igordanilchik.android.loader_test.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +21,6 @@ import butterknife.ButterKnife;
 
 
 public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapter.ViewHolder> {
-    @NonNull
-    private Context context;
     @Nullable
     private final OnItemClickListener listener;
 
@@ -31,7 +28,7 @@ public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapt
         void onItemClick(View itemView, int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         @BindView(R.id.category_title)
         TextView title;
@@ -45,9 +42,8 @@ public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapt
         }
     }
 
-    public CategoriesAdapter(@NonNull Context ctx, @Nullable OnItemClickListener listener) {
+    public CategoriesAdapter(@Nullable OnItemClickListener listener) {
         super(null);
-        context = ctx;
         this.listener = listener;
     }
 
@@ -61,6 +57,10 @@ public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapt
 
     @Override
     protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+        // If a context is needed, it can be retrieved
+        // from the ViewHolder's root view.
+        Context context = holder.itemView.getContext();
+
         holder.title.setText(cursor.getString(ShopPersistenceContract.CategoryEntry.COL_TITLE));
         String url = cursor.getString(ShopPersistenceContract.CategoryEntry.COL_PICTURE_URL);
         Glide.with(context)

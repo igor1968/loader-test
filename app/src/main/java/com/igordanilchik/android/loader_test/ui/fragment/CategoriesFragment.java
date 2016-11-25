@@ -65,7 +65,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        cursorAdapter = new CategoriesAdapter(getContext(), this);
+        cursorAdapter = new CategoriesAdapter(this);
         recyclerView.setAdapter(cursorAdapter);
 
         if (savedInstanceState == null) {
@@ -104,7 +104,9 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-  //      swipeContainer.setRefreshing(false);
+        if (swipeContainer != null) {
+            swipeContainer.setRefreshing(false);
+        }
         if (data != null) {
             if (data.moveToLast()) {
                 cursorAdapter.changeCursor(data);

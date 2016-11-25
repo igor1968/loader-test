@@ -67,13 +67,13 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        cursorAdapter = new OffersAdapter(getContext(), this);
+        cursorAdapter = new OffersAdapter(this);
         recyclerView.setAdapter(cursorAdapter);
 
         if (savedInstanceState == null) {
-            getActivity().getSupportLoaderManager().initLoader(OFFERS_LOADER + categoryId, null, this);
+            getLoaderManager().initLoader(OFFERS_LOADER, null, this);
         } else {
-            getActivity().getSupportLoaderManager().restartLoader(OFFERS_LOADER + categoryId, savedInstanceState, this);
+            getLoaderManager().restartLoader(OFFERS_LOADER, savedInstanceState, this);
         }
 
         RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);

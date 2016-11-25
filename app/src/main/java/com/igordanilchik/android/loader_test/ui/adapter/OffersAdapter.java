@@ -2,7 +2,6 @@ package com.igordanilchik.android.loader_test.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -23,8 +22,6 @@ import butterknife.ButterKnife;
 public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewHolder> {
 
     private static final String LOG_TAG = OffersAdapter.class.getSimpleName();
-    @NonNull
-    private Context context;
     @Nullable
     private final OnItemClickListener listener;
 
@@ -52,9 +49,8 @@ public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewH
         }
     }
 
-    public OffersAdapter(@NonNull Context ctx, @Nullable OnItemClickListener listener) {
+    public OffersAdapter(@Nullable OnItemClickListener listener) {
         super(null);
-        context = ctx;
         this.listener = listener;
     }
 
@@ -68,6 +64,9 @@ public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewH
 
     @Override
     protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+        // If a context is needed, it can be retrieved
+        // from the ViewHolder's root view.
+        Context context = holder.itemView.getContext();
         holder.name.setText(cursor.getString(ShopPersistenceContract.OfferEntry.COL_TITLE));
         holder.price.setText(context.getString(R.string.offer_price, cursor.getString(ShopPersistenceContract.OfferEntry.COL_PRICE)));
 

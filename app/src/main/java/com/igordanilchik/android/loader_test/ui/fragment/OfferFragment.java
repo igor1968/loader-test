@@ -66,9 +66,9 @@ public class OfferFragment extends Fragment implements LoaderManager.LoaderCallb
         }
 
         if (savedInstanceState == null) {
-            getActivity().getSupportLoaderManager().initLoader(OFFER_LOADER, null, this);
+            getLoaderManager().initLoader(OFFER_LOADER, null, this);
         } else {
-            getActivity().getSupportLoaderManager().restartLoader(OFFER_LOADER, savedInstanceState, this);
+            getLoaderManager().restartLoader(OFFER_LOADER, savedInstanceState, this);
         }
     }
 

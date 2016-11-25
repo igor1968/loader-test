@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
         if (currentFragment != null) {
             bundle.putString(ARG_CURRENT_FRAGMENT_TAG, currentFragment.getTag());
         }
+        currentFragment = null;
     }
 
     @Override
