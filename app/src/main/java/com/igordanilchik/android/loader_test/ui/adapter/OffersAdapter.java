@@ -24,7 +24,7 @@ public class OffersAdapter extends CursorRecyclerAdapter<OffersAdapter.ViewHolde
     private static final String LOG_TAG = OffersAdapter.class.getSimpleName();
 
     @Nullable
-    private final OnItemClickListener listener;
+    private OnItemClickListener listener;
 
 
     public interface OnItemClickListener {
@@ -93,4 +93,9 @@ public class OffersAdapter extends CursorRecyclerAdapter<OffersAdapter.ViewHolde
                 listener.onItemClick(offerId);
         });
     }
+
+    public void clearListener() {
+        listener = null;
+    }
+
 }

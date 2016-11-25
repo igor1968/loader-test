@@ -91,6 +91,7 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        adapter.clearListener();
         recyclerView.setAdapter(null);
         adapter = null;
         unbinder.unbind();

@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 
 public class CategoriesAdapter extends CursorRecyclerAdapter<CategoriesAdapter.ViewHolder> {
     @Nullable
-    private final OnItemClickListener listener;
+    private OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(int categoryId);
@@ -78,5 +78,9 @@ public class CategoriesAdapter extends CursorRecyclerAdapter<CategoriesAdapter.V
             if (listener != null)
                 listener.onItemClick(categoryId);
         });
+    }
+
+    public void clearListener() {
+        listener = null;
     }
 }

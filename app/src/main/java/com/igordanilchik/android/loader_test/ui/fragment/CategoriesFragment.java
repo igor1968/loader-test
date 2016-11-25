@@ -81,6 +81,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        adapter.clearListener();
         recyclerView.setAdapter(null);
         adapter = null;
         unbinder.unbind();
