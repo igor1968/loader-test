@@ -35,7 +35,7 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     private Unbinder unbinder;
 
     private int categoryId;
-    OffersAdapter cursorAdapter;
+    OffersAdapter adapter;
 
     @NonNull
     public static OffersFragment newInstance(int categoryId) {
@@ -67,21 +67,21 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        cursorAdapter = new OffersAdapter(this);
-        recyclerView.setAdapter(cursorAdapter);
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        adapter = new OffersAdapter(this);
+        recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             getLoaderManager().initLoader(OFFERS_LOADER, null, this);
         } else {
             getLoaderManager().restartLoader(OFFERS_LOADER, savedInstanceState, this);
         }
-
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
     @Override
-    public void onItemClick(View itemView, int offerId) {
+    public void onItemClick(int offerId) {
         if (getActivity() instanceof CategoriesContract) {
             ((CategoriesContract)getActivity()).showOffer(offerId);
         }
@@ -102,13 +102,13 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null) {
             if (data.moveToLast()) {
-                cursorAdapter.changeCursor(data);
+                adapter.changeCursor(data);
             }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        cursorAdapter.changeCursor(null);
+        adapter.changeCursor(null);
     }
 }

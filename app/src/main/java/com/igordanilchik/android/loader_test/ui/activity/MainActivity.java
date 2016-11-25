@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
 
     ActionBarDrawerToggle drawerToggle;
     @Nullable
-    Fragment currentFragment = null;
+    String currentTag;
 
 
     @Override
@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
             selectDrawerItem(item);
         } else {
             if (savedInstanceState.get(ARG_CURRENT_FRAGMENT_TAG) != null) {
-                currentFragment = getSupportFragmentManager().findFragmentByTag(savedInstanceState.getString(ARG_CURRENT_FRAGMENT_TAG));
-                if (currentFragment != null) {
+                currentTag = savedInstanceState.getString(ARG_CURRENT_FRAGMENT_TAG);
+                if (currentTag != null) {
                     updateDrawer();
                 }
             }
@@ -98,10 +98,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     @Override
     public void onSaveInstanceState(final Bundle bundle) {
         super.onSaveInstanceState(bundle);
-        if (currentFragment != null) {
-            bundle.putString(ARG_CURRENT_FRAGMENT_TAG, currentFragment.getTag());
+        if (currentTag != null) {
+            bundle.putString(ARG_CURRENT_FRAGMENT_TAG, currentTag);
         }
-        currentFragment = null;
     }
 
     @Override
@@ -167,16 +166,16 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
         }
 
         try {
-            currentFragment = (Fragment) fragmentClass.newInstance();
+            Fragment currentFragment = (Fragment) fragmentClass.newInstance();
+            // Insert the fragment by replacing any existing fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_content, currentFragment, fragmentClass.getName())
+                    .commit();
+            this.currentTag = fragmentClass.getName();
         }
         catch (Exception e) {
             Log.e(LOG_TAG, "Error fragment load", e);
         }
-
-        // Insert the fragment by replacing any existing fragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_content, currentFragment, fragmentClass.getName())
-                .commit();
     }
 
     public void selectDrawerItem(MenuItem item) {
@@ -188,14 +187,13 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     }
 
     public void updateDrawer() {
-        // update activity title and drawerLayout selection
-        if (currentFragment instanceof CategoriesFragment && !currentFragment.isHidden()) {
+        if (currentTag.equals(CategoriesFragment.class.getName())) {
             drawer.setCheckedItem(R.id.nav_catalogue_fragment);
             setTitle(drawer.getMenu().findItem(R.id.nav_catalogue_fragment).getTitle());
-        } else if (currentFragment instanceof ContactsFragment && !currentFragment.isHidden()) {
+        } else if (currentTag.equals(ContactsFragment.class.getName())) {
             drawer.setCheckedItem(R.id.nav_contacts_fragment);
             setTitle(drawer.getMenu().findItem(R.id.nav_contacts_fragment).getTitle());
-        } else if (currentFragment instanceof AboutFragment && !currentFragment.isHidden()) {
+        } else if (currentTag.equals(AboutFragment.class.getName())) {
             drawer.setCheckedItem(R.id.nav_about_fragment);
             setTitle(drawer.getMenu().findItem(R.id.nav_about_fragment).getTitle());
         }

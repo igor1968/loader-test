@@ -41,7 +41,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     RecyclerView.LayoutManager layoutManager;
     private Unbinder unbinder;
 
-    CategoriesAdapter cursorAdapter;
+    CategoriesAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
@@ -65,17 +65,17 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        cursorAdapter = new CategoriesAdapter(this);
-        recyclerView.setAdapter(cursorAdapter);
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        adapter = new CategoriesAdapter(this);
+        recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
         } else {
             getActivity().getSupportLoaderManager().restartLoader(CATEGORIES_LOADER, savedInstanceState, this);
         }
-
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     }
 
     @Override
-    public void onItemClick(View itemView, int categoryId) {
+    public void onItemClick(int categoryId) {
         if (getActivity() instanceof CategoriesContract) {
             ((CategoriesContract)getActivity()).showCategory(categoryId);
         }
@@ -109,7 +109,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         }
         if (data != null) {
             if (data.moveToLast()) {
-                cursorAdapter.changeCursor(data);
+                adapter.changeCursor(data);
                 emptyState(false);
             } else {
                 emptyState(true);
@@ -131,6 +131,5 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        cursorAdapter.changeCursor(null);
     }
 }

@@ -19,15 +19,16 @@ import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceCo
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewHolder> {
+public class OffersAdapter extends CursorRecyclerAdapter<OffersAdapter.ViewHolder> {
 
     private static final String LOG_TAG = OffersAdapter.class.getSimpleName();
+
     @Nullable
     private final OnItemClickListener listener;
 
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int offerId);
+        void onItemClick(int offerId);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,7 +64,7 @@ public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewH
     }
 
     @Override
-    protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public void onBindViewHolderCursor(ViewHolder holder, Cursor cursor) {
         // If a context is needed, it can be retrieved
         // from the ViewHolder's root view.
         Context context = holder.itemView.getContext();
@@ -89,7 +90,7 @@ public class OffersAdapter extends RecyclerViewCursorAdapter<OffersAdapter.ViewH
 
         holder.view.setOnClickListener(v -> {
             if (listener != null)
-                listener.onItemClick(holder.view, offerId);
+                listener.onItemClick(offerId);
         });
     }
 }

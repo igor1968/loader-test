@@ -20,12 +20,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapter.ViewHolder> {
+public class CategoriesAdapter extends CursorRecyclerAdapter<CategoriesAdapter.ViewHolder> {
     @Nullable
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
+        void onItemClick(int categoryId);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +56,7 @@ public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapt
     }
 
     @Override
-    protected void onBindViewHolder(ViewHolder holder, Cursor cursor) {
+    public void onBindViewHolderCursor(ViewHolder holder, Cursor cursor) {
         // If a context is needed, it can be retrieved
         // from the ViewHolder's root view.
         Context context = holder.itemView.getContext();
@@ -76,7 +76,7 @@ public class CategoriesAdapter extends RecyclerViewCursorAdapter<CategoriesAdapt
 
         holder.view.setOnClickListener(v -> {
             if (listener != null)
-                listener.onItemClick(holder.view, categoryId);
+                listener.onItemClick(categoryId);
         });
     }
 }
