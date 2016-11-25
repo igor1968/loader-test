@@ -54,13 +54,6 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -70,6 +63,13 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
         adapter = new CategoriesAdapter(this);
         recyclerView.setAdapter(adapter);
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState == null) {
             getActivity().getSupportLoaderManager().initLoader(CATEGORIES_LOADER, null, this);
@@ -81,6 +81,8 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        recyclerView.setAdapter(null);
+        adapter = null;
         unbinder.unbind();
     }
 

@@ -51,6 +51,17 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_offers, container, false);
         this.unbinder = ButterKnife.bind(this, view);
+
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        adapter = new OffersAdapter(this);
+        recyclerView.setAdapter(adapter);
+
         return view;
     }
 
@@ -62,16 +73,6 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
         if (bundle != null && bundle.containsKey(MainActivity.ARG_CATEGORY_ID)) {
             categoryId = bundle.getInt(MainActivity.ARG_CATEGORY_ID);
         }
-
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-
-        RecyclerView.ItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        adapter = new OffersAdapter(this);
-        recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             getLoaderManager().initLoader(OFFERS_LOADER, null, this);
@@ -90,6 +91,8 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        recyclerView.setAdapter(null);
+        adapter = null;
         unbinder.unbind();
     }
 
@@ -109,6 +112,5 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.changeCursor(null);
     }
 }
