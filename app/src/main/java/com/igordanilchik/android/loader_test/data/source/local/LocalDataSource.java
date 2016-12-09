@@ -42,7 +42,7 @@ public class LocalDataSource implements DataSource {
 
     @Override
     @WorkerThread
-    public void add(@NonNull Category category) {
+    public void saveCategory(@NonNull Category category) {
         ContentValues values = CategoryValues.from(category);
 
         final Cursor cursor = contentResolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
@@ -64,7 +64,7 @@ public class LocalDataSource implements DataSource {
 
     @Override
     @WorkerThread
-    public void add(@NonNull final List<Category> categories) {
+    public void saveCategories(@NonNull final List<Category> categories) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         for (Category category : categories) {
             ContentValues values = CategoryValues.from(category);
@@ -98,7 +98,7 @@ public class LocalDataSource implements DataSource {
 
     @Override
     @UiThread
-    public void add(@NonNull Shop dataset) {
+    public void saveDataset(@NonNull Shop dataset) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -164,6 +164,11 @@ public class LocalDataSource implements DataSource {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @Override
+    public void getDataset(@NonNull GetDatasetCallback callback) {
+        // no-op since the data is loader via Cursor Loader
+    }
+
     @Nullable
     private List<Category> getCategories(@NonNull Shop dataset) {
         List<Category> categories = dataset.getCategories();
@@ -180,6 +185,4 @@ public class LocalDataSource implements DataSource {
         }
         return categories;
     }
-
-
 }

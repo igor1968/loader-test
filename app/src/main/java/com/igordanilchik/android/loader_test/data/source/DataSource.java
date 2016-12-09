@@ -9,9 +9,18 @@ import java.util.List;
 
 public interface DataSource {
 
-    void add(@NonNull Category category);
+    interface GetDatasetCallback {
 
-    void add(@NonNull List<Category> categories);
+        void onDataLoaded(@NonNull Shop dataset);
 
-    void add(@NonNull Shop dataset);
+        void onDataNotAvailable();
+    }
+
+    void saveCategory(@NonNull Category category);
+
+    void saveCategories(@NonNull List<Category> categories);
+
+    void saveDataset(@NonNull Shop dataset);
+
+    void getDataset(@NonNull GetDatasetCallback callback);
 }

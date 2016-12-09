@@ -6,6 +6,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.igordanilchik.android.loader_test.data.Catalogue;
+import com.igordanilchik.android.loader_test.data.Shop;
 
 import java.io.IOException;
 
@@ -14,17 +15,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
-public class CatalogueLoader extends AsyncTaskLoader<Catalogue> {
+public class RemoteDataLoader extends AsyncTaskLoader<Shop> {
 
-    private static final String LOG_TAG = CatalogueLoader.class.getSimpleName();
+    private static final String LOG_TAG = RemoteDataLoader.class.getSimpleName();
 
     private static final String API_BASE_URL = "http://ufa.farfor.ru";
     private static final String API_KEY = "ukAXxeJYZN";
 
     @Nullable
-    private Catalogue data = null;
+    private Shop data = null;
 
-    public CatalogueLoader(Context context) {
+    public RemoteDataLoader(Context context) {
         super(context);
     }
 
@@ -38,7 +39,7 @@ public class CatalogueLoader extends AsyncTaskLoader<Catalogue> {
     }
 
     @Override
-    public Catalogue loadInBackground() {
+    public Shop loadInBackground() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
@@ -54,15 +55,15 @@ public class CatalogueLoader extends AsyncTaskLoader<Catalogue> {
             Log.e(LOG_TAG, "Network error: ", e);
         }
 
-        Catalogue result = null;
+        Shop result = null;
         if (response != null && response.isSuccessful()) {
-            result = response.body();
+            result = response.body().getShop();
         }
         return result;
     }
 
     @Override
-    public void deliverResult(Catalogue data) {
+    public void deliverResult(Shop data) {
         this.data = data;
         super.deliverResult(data);
     }

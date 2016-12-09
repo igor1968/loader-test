@@ -20,10 +20,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.igordanilchik.android.loader_test.R;
-import com.igordanilchik.android.loader_test.data.Catalogue;
+import com.igordanilchik.android.loader_test.data.Shop;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
 import com.igordanilchik.android.loader_test.data.source.local.LocalDataSource;
-import com.igordanilchik.android.loader_test.data.source.remote.CatalogueLoader;
+import com.igordanilchik.android.loader_test.data.source.remote.RemoteDataLoader;
 import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity implements ViewContract,
-        LoaderManager.LoaderCallbacks<Catalogue> {
+        LoaderManager.LoaderCallbacks<Shop> {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     public static final String ARG_CURRENT_FRAGMENT_TAG = "ARG_CURRENT_FRAGMENT_TAG";
@@ -143,19 +143,20 @@ public class MainActivity extends AppCompatActivity implements ViewContract,
 
 
     @Override
-    public Loader<Catalogue> onCreateLoader(int id, Bundle args) {
-        return new CatalogueLoader(this);
+    public Loader<Shop> onCreateLoader(int id, Bundle args) {
+        return new RemoteDataLoader(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<Catalogue> loader, Catalogue data) {
-        if (data != null && data.getShop() != null) {
-            LocalDataSource.getInstance(getContentResolver()).add(data.getShop());
+    public void onLoadFinished(Loader<Shop> loader, Shop data) {
+        if (data != null) {
+            Log.d(LOG_TAG, "Remote data loaded");
+            LocalDataSource.getInstance(getContentResolver()).saveDataset(data);
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<Catalogue> loader) {
+    public void onLoaderReset(Loader<Shop> loader) {
     }
 
     public void navigate(int id) {

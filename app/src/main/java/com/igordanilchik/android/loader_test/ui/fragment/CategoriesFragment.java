@@ -45,7 +45,7 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final @Nullable ViewGroup container, final @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_catalogue, container, false);
+        final View view = inflater.inflate(R.layout.fragment_categories, container, false);
         this.unbinder = ButterKnife.bind(this, view);
 
         swipeContainer.setOnRefreshListener(this::refresh);
