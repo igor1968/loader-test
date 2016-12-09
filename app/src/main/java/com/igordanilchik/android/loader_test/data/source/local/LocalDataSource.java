@@ -97,7 +97,7 @@ public class LocalDataSource implements DataSource {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                Log.d(LOG_TAG, "Saving categories to local datasource...");
+                Log.d(LOG_TAG, "Prepare categories to batch save...");
 
                 ContentResolver resolver = context.getContentResolver();
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -123,13 +123,12 @@ public class LocalDataSource implements DataSource {
                             }
                         }
                     }
-
-                    Log.d(LOG_TAG, "Saving offers to local datasource...");
+                    Log.d(LOG_TAG, "Prepare offers to batch save...");
 
                     List<Offer> offers = dataset.getOffers();
                     if (offers != null) {
                         for (Offer offer : offers) {
-                            ContentValues values = OfferValues.from(offer);
+                            ContentValues values = OfferValues.from(context, offer);
                             Cursor cursor = resolver.query(ShopPersistenceContract.OfferEntry.buildUri(offer.getId()),
                                     null, null, null, null);
                             try {
@@ -148,8 +147,7 @@ public class LocalDataSource implements DataSource {
                                 }
                             }
                         }
-
-                        Log.d(LOG_TAG, "Finish batch save...");
+                        Log.d(LOG_TAG, "Performing batch apply...");
 
                         if (ops.size() > 0) {
                             try {
