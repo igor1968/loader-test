@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.igordanilchik.android.loader_test.LoaderTestApplication;
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
 import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
+import com.squareup.leakcanary.RefWatcher;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,8 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        swipeContainer.setRefreshing(true);
+
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -85,6 +89,12 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         recyclerView.setAdapter(null);
         //adapter = null;
         unbinder.unbind();
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = LoaderTestApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Override
@@ -129,12 +139,8 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     }
 
     private void emptyState(boolean show){
-        if (getActivity() instanceof ViewContract) {
-            if (show) {
-                ((ViewContract) getActivity()).showEmptyState();
-            } else {
-                ((ViewContract) getActivity()).hideEmptyState();
-            }
+        if (getActivity() != null && isAdded()) {
+            emptyStateContainer.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 

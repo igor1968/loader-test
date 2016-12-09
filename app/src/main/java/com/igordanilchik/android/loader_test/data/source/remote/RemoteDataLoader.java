@@ -10,6 +10,8 @@ import com.igordanilchik.android.loader_test.data.Shop;
 
 import java.io.IOException;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -40,9 +42,16 @@ public class RemoteDataLoader extends AsyncTaskLoader<Shop> {
 
     @Override
     public Shop loadInBackground() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
+                .client(httpClient.build())
                 .build();
 
         ClientApi client = retrofit.create(ClientApi.class);

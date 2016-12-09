@@ -16,8 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.Shop;
@@ -52,15 +50,12 @@ public class MainActivity extends AppCompatActivity implements ViewContract,
     Toolbar toolbar;
     @BindView(R.id.nav_view)
     NavigationView drawer;
-    @BindView(R.id.empty_state_container)
-    LinearLayout emptyStateContainer;
 
     ActionBarDrawerToggle drawerToggle;
     @Nullable
     String currentTag;
 
     LoaderProvider loaderProvider;
-
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -151,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements ViewContract,
     public void onLoadFinished(Loader<Shop> loader, Shop data) {
         if (data != null) {
             Log.d(LOG_TAG, "Remote data loaded");
-            LocalDataSource.getInstance(getContentResolver()).saveDataset(data);
+            new LocalDataSource(getApplicationContext()).saveDataset(data);
         }
     }
 
@@ -212,7 +207,9 @@ public class MainActivity extends AppCompatActivity implements ViewContract,
 
     @Override
     public void refreshData() {
-        getSupportLoaderManager().initLoader(CATALOGUE_LOADER, null, this);
+        Log.d(LOG_TAG, "Remote data loading...");
+        //restart loader because we need to ask network for new content
+        getSupportLoaderManager().restartLoader(CATALOGUE_LOADER, null, this);
     }
 
     @Override
@@ -226,16 +223,6 @@ public class MainActivity extends AppCompatActivity implements ViewContract,
     public void showOffer(int offerId) {
         OfferFragment fragment = OfferFragment.newInstance(offerId);
         FragmentUtils.replaceFragment(this, R.id.frame_content, fragment, true);
-    }
-
-    @Override
-    public void showEmptyState() {
-        emptyStateContainer.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideEmptyState() {
-        emptyStateContainer.setVisibility(View.GONE);
     }
 
     @Override

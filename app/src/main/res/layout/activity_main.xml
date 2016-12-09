@@ -31,7 +31,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/empty_state"/>
         <include layout="@layout/content_main"/>
 
     </android.support.design.widget.CoordinatorLayout>

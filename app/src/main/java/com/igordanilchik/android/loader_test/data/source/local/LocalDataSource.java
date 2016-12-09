@@ -3,6 +3,7 @@ package com.igordanilchik.android.loader_test.data.source.local;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -25,34 +26,27 @@ import java.util.List;
 
 public class LocalDataSource implements DataSource {
     private static final String LOG_TAG = LocalDataSource.class.getSimpleName();
-    private ContentResolver contentResolver;
 
-    private static LocalDataSource INSTANCE;
+    @NonNull
+    private final Context context;
 
-    private LocalDataSource(@NonNull ContentResolver contentResolver) {
-        this.contentResolver = contentResolver;
+    public LocalDataSource(@NonNull Context ctx) {
+        context = ctx;
     }
-
-    public static LocalDataSource getInstance(@NonNull ContentResolver contentResolver) {
-        if (INSTANCE == null) {
-            INSTANCE = new LocalDataSource(contentResolver);
-        }
-        return INSTANCE;
-    }
-
     @Override
     @WorkerThread
     public void saveCategory(@NonNull Category category) {
         ContentValues values = CategoryValues.from(category);
+        ContentResolver resolver = context.getContentResolver();
 
-        final Cursor cursor = contentResolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
+        final Cursor cursor = resolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
                 null, null, null, null);
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                contentResolver.update(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
+                resolver.update(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
                         values, null, null);
             } else {
-                contentResolver.insert(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
+                resolver.insert(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
                         values);
             }
         } finally {
@@ -65,10 +59,11 @@ public class LocalDataSource implements DataSource {
     @Override
     @WorkerThread
     public void saveCategories(@NonNull final List<Category> categories) {
+        ContentResolver resolver = context.getContentResolver();
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         for (Category category : categories) {
             ContentValues values = CategoryValues.from(category);
-            Cursor cursor = contentResolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
+            Cursor cursor = resolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
                     null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
@@ -89,7 +84,7 @@ public class LocalDataSource implements DataSource {
 
         if (ops.size() > 0) {
             try {
-                contentResolver.applyBatch(ShopPersistenceContract.CONTENT_AUTHORITY, ops);
+                resolver.applyBatch(ShopPersistenceContract.CONTENT_AUTHORITY, ops);
             } catch (RemoteException | OperationApplicationException e) {
                 Log.w(LOG_TAG, "Error during batch apply: ", e);
             }
@@ -102,13 +97,15 @@ public class LocalDataSource implements DataSource {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
+                Log.d(LOG_TAG, "Saving categories to local datasource...");
 
+                ContentResolver resolver = context.getContentResolver();
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                 List<Category> categories = getCategories(dataset);
                 if (categories != null) {
                     for (Category category : categories) {
                         ContentValues values = CategoryValues.from(category);
-                        Cursor cursor = contentResolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
+                        Cursor cursor = resolver.query(ShopPersistenceContract.CategoryEntry.buildUri(category.getId()),
                                 null, null, null, null);
                         try {
                             if (cursor != null && cursor.moveToFirst()) {
@@ -127,11 +124,13 @@ public class LocalDataSource implements DataSource {
                         }
                     }
 
+                    Log.d(LOG_TAG, "Saving offers to local datasource...");
+
                     List<Offer> offers = dataset.getOffers();
                     if (offers != null) {
                         for (Offer offer : offers) {
                             ContentValues values = OfferValues.from(offer);
-                            Cursor cursor = contentResolver.query(ShopPersistenceContract.OfferEntry.buildUri(offer.getId()),
+                            Cursor cursor = resolver.query(ShopPersistenceContract.OfferEntry.buildUri(offer.getId()),
                                     null, null, null, null);
                             try {
                                 if (cursor != null && cursor.moveToFirst()) {
@@ -150,15 +149,18 @@ public class LocalDataSource implements DataSource {
                             }
                         }
 
+                        Log.d(LOG_TAG, "Finish batch save...");
+
                         if (ops.size() > 0) {
                             try {
-                                contentResolver.applyBatch(ShopPersistenceContract.CONTENT_AUTHORITY, ops);
+                                resolver.applyBatch(ShopPersistenceContract.CONTENT_AUTHORITY, ops);
                             } catch (RemoteException | OperationApplicationException e) {
                                 Log.w(LOG_TAG, "Error during batch apply: ", e);
                             }
                         }
                     }
                 }
+                Log.d(LOG_TAG, "Saved to local datasource");
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

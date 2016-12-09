@@ -10,9 +10,5 @@ public interface ViewContract {
 
     void showOffer(int offerId);
 
-    void showEmptyState();
-
-    void hideEmptyState();
-
     LoaderProvider getLoaderProvider();
 }
