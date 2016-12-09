@@ -19,6 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
 import com.igordanilchik.android.loader_test.data.source.local.ShopPersistenceContract;
+import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 
 import butterknife.BindView;
@@ -87,7 +88,13 @@ public class OfferFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new LoaderProvider(getActivity()).createOfferLoader(offerId);
+        LoaderProvider provider;
+        if (getActivity() instanceof ViewContract) {
+            provider = ((ViewContract) getActivity()).getLoaderProvider();
+        } else {
+            provider = new LoaderProvider(getActivity());
+        }
+        return provider.createOfferLoader(offerId);
     }
 
     @Override

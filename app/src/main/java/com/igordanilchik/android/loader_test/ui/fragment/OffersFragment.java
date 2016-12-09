@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
-import com.igordanilchik.android.loader_test.ui.CategoriesContract;
+import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.activity.MainActivity;
 import com.igordanilchik.android.loader_test.ui.adapter.OffersAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
@@ -83,8 +83,8 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onItemClick(int offerId) {
-        if (getActivity() instanceof CategoriesContract) {
-            ((CategoriesContract)getActivity()).showOffer(offerId);
+        if (getActivity() instanceof ViewContract) {
+            ((ViewContract)getActivity()).showOffer(offerId);
         }
     }
 
@@ -99,7 +99,13 @@ public class OffersFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new LoaderProvider(getActivity()).createOffersLoader(categoryId);
+        LoaderProvider provider;
+        if (getActivity() instanceof ViewContract) {
+            provider = ((ViewContract) getActivity()).getLoaderProvider();
+        } else {
+            provider = new LoaderProvider(getActivity());
+        }
+        return provider.createOffersLoader(categoryId);
     }
 
     @Override

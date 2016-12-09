@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
-import com.igordanilchik.android.loader_test.ui.CategoriesContract;
+import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.adapter.CategoriesAdapter;
 import com.igordanilchik.android.loader_test.utils.DividerItemDecoration;
 
@@ -83,26 +83,32 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
         super.onDestroyView();
         adapter.clearListener();
         recyclerView.setAdapter(null);
-        adapter = null;
+        //adapter = null;
         unbinder.unbind();
     }
 
     @Override
     public void onItemClick(int categoryId) {
-        if (getActivity() instanceof CategoriesContract) {
-            ((CategoriesContract)getActivity()).showCategory(categoryId);
+        if (getActivity() instanceof ViewContract) {
+            ((ViewContract)getActivity()).showCategory(categoryId);
         }
     }
 
     private void refresh() {
-        if (getActivity() instanceof CategoriesContract) {
-            ((CategoriesContract) getActivity()).refreshData();
+        if (getActivity() instanceof ViewContract) {
+            ((ViewContract) getActivity()).refreshData();
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new LoaderProvider(getActivity()).createCategoriesLoader();
+        LoaderProvider provider;
+        if (getActivity() instanceof ViewContract) {
+            provider = ((ViewContract) getActivity()).getLoaderProvider();
+        } else {
+            provider = new LoaderProvider(getActivity());
+        }
+        return provider.createCategoriesLoader();
     }
 
     @Override
@@ -123,11 +129,11 @@ public class CategoriesFragment extends Fragment implements CategoriesAdapter.On
     }
 
     private void emptyState(boolean show){
-        if (getActivity() instanceof CategoriesContract) {
+        if (getActivity() instanceof ViewContract) {
             if (show) {
-                ((CategoriesContract) getActivity()).showEmptyState();
+                ((ViewContract) getActivity()).showEmptyState();
             } else {
-                ((CategoriesContract) getActivity()).hideEmptyState();
+                ((ViewContract) getActivity()).hideEmptyState();
             }
         }
     }

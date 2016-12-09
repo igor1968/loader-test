@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
@@ -21,8 +22,9 @@ import android.widget.LinearLayout;
 import com.igordanilchik.android.loader_test.R;
 import com.igordanilchik.android.loader_test.data.Catalogue;
 import com.igordanilchik.android.loader_test.data.source.LoaderProvider;
-import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
-import com.igordanilchik.android.loader_test.ui.CategoriesContract;
+import com.igordanilchik.android.loader_test.data.source.local.LocalDataSource;
+import com.igordanilchik.android.loader_test.data.source.remote.CatalogueLoader;
+import com.igordanilchik.android.loader_test.ui.ViewContract;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.OfferFragment;
@@ -34,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements CategoriesContract,
+public class MainActivity extends AppCompatActivity implements ViewContract,
         LoaderManager.LoaderCallbacks<Catalogue> {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     ActionBarDrawerToggle drawerToggle;
     @Nullable
     String currentTag;
+
+    LoaderProvider loaderProvider;
 
 
     @Override
@@ -80,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
+
+        loaderProvider = new LoaderProvider(this);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
@@ -144,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     @Override
     public void onLoadFinished(Loader<Catalogue> loader, Catalogue data) {
         if (data != null && data.getShop() != null) {
-            new LoaderProvider(this).add(data.getShop());
+            LocalDataSource.getInstance(getContentResolver()).add(data.getShop());
         }
     }
 
@@ -167,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
             default:
                 fragmentClass = CategoriesFragment.class;
         }
+        clearBackstack();
 
         try {
             Fragment currentFragment = (Fragment) fragmentClass.newInstance();
@@ -228,5 +235,18 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
     @Override
     public void hideEmptyState() {
         emptyStateContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public LoaderProvider getLoaderProvider() {
+        return loaderProvider;
+    }
+
+    private void clearBackstack() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(0);
+            getSupportFragmentManager().popBackStack(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().executePendingTransactions();
+        }
     }
 }
