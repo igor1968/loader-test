@@ -2,6 +2,7 @@ package com.igordanilchik.android.loader_test.ui.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -24,9 +25,9 @@ import com.igordanilchik.android.loader_test.loader.CatalogueLoader;
 import com.igordanilchik.android.loader_test.ui.CategoriesContract;
 import com.igordanilchik.android.loader_test.ui.fragment.AboutFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.CategoriesFragment;
-import com.igordanilchik.android.loader_test.ui.fragment.ContactsFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.OfferFragment;
 import com.igordanilchik.android.loader_test.ui.fragment.OffersFragment;
+import com.igordanilchik.android.loader_test.ui.fragment.SettingsFragment;
 import com.igordanilchik.android.loader_test.utils.FragmentUtils;
 
 import butterknife.BindView;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         if (savedInstanceState == null) {
             refreshData();
@@ -155,8 +158,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
             case R.id.nav_catalogue_fragment:
                 fragmentClass = CategoriesFragment.class;
                 break;
-            case R.id.nav_contacts_fragment:
-                fragmentClass = ContactsFragment.class;
+            case R.id.nav_preferences_fragment:
+                fragmentClass = SettingsFragment.class;
                 break;
             case R.id.nav_about_fragment:
                 fragmentClass = AboutFragment.class;
@@ -190,9 +193,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesContrac
         if (currentTag.equals(CategoriesFragment.class.getName())) {
             drawer.setCheckedItem(R.id.nav_catalogue_fragment);
             setTitle(drawer.getMenu().findItem(R.id.nav_catalogue_fragment).getTitle());
-        } else if (currentTag.equals(ContactsFragment.class.getName())) {
-            drawer.setCheckedItem(R.id.nav_contacts_fragment);
-            setTitle(drawer.getMenu().findItem(R.id.nav_contacts_fragment).getTitle());
+        } else if (currentTag.equals(SettingsFragment.class.getName())) {
+            drawer.setCheckedItem(R.id.nav_preferences_fragment);
+            setTitle(drawer.getMenu().findItem(R.id.nav_preferences_fragment).getTitle());
         } else if (currentTag.equals(AboutFragment.class.getName())) {
             drawer.setCheckedItem(R.id.nav_about_fragment);
             setTitle(drawer.getMenu().findItem(R.id.nav_about_fragment).getTitle());
