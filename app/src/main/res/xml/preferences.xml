@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
-        android:key="pref_sync"
-        android:title="@string/pref_sync"
-        android:summary="@string/pref_sync_summ"
+        android:key="@string/pref_startup_cache_key"
+        android:title="@string/pref_startup_cache"
+        android:summary="@string/pref_startup_cache_summ"
         android:defaultValue="true" />
 </PreferenceScreen>
